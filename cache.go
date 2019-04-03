@@ -58,7 +58,7 @@ func (n *namespaceCache) dumpNamespaceYAML(namespace, filepath string) error {
 		return fmt.Errorf("ns %s no content key", namespace)
 	}
 
-	err = os.Mkdir(filepath, 0755)
+	err := os.Mkdir(filepath, 0755)
 	if err != nil {
 		return err
 	}
