@@ -4,6 +4,7 @@ import (
 	"encoding/gob"
 	"fmt"
 	"os"
+	"path/filepath"
 	"sync"
 )
 
@@ -40,7 +41,7 @@ func (n *namespaceCache) drain() {
 	}
 }
 
-func (n *namespaceCache) dumpNamespaceYAML(namespace, filepath string) error {
+func (n *namespaceCache) dumpNamespaceYAML(namespace, dumpPath string) error {
 
 	var (
 		dumps   = map[string]string{}
@@ -58,12 +59,15 @@ func (n *namespaceCache) dumpNamespaceYAML(namespace, filepath string) error {
 		return fmt.Errorf("ns %s no content key", namespace)
 	}
 
-	err := os.Mkdir(filepath, 0755)
-	if err != nil {
-		return err
+	dirName := filepath.Dir(dumpPath)
+	if _, statsErr := os.Stat(dirName); statsErr != nil {
+		err := os.Mkdir(dirName, 0755)
+		if err != nil {
+			return err
+		}
 	}
 
-	f, err := os.OpenFile(filepath, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0755)
+	f, err := os.OpenFile(dumpPath, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0755)
 	if err != nil {
 		return err
 	}
