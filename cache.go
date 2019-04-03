@@ -2,6 +2,7 @@ package agollo
 
 import (
 	"encoding/gob"
+	"fmt"
 	"os"
 	"sync"
 )
@@ -37,6 +38,34 @@ func (n *namespaceCache) drain() {
 	for namespace := range n.caches {
 		delete(n.caches, namespace)
 	}
+}
+
+func (n *namespaceCache) dumpNamespaceYAML(namespace, filepath string) error {
+
+	var (
+		dumps   = map[string]string{}
+		content string
+		cache   *cache
+		exist   bool
+	)
+
+	if cache, exist = n.caches[namespace]; !exist {
+		return fmt.Errorf("ns %s not exist in cache", namespace)
+	}
+
+	dumps = cache.dump()
+	if content, exist = dumps["content"]; !exist {
+		return fmt.Errorf("ns %s no content key", namespace)
+	}
+
+	f, err := os.OpenFile(filepath, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0755)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	_, err = f.Write([]byte(content))
+	return err
 }
 
 func (n *namespaceCache) dump(name string) error {

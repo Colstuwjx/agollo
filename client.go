@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"path"
+	"strings"
 )
 
 // Client for apollo
@@ -100,6 +101,25 @@ func (c *Client) loadLocal(name string) error {
 // dump caches to file
 func (c *Client) dump(name string) error {
 	return c.caches.dump(name)
+}
+
+// Download dump namespace content cache to specified file path
+func (c *Client) Download(namespace, filepath string) error {
+	// do sync first
+	_, err := c.sync(namespace)
+	if err != nil {
+		return err
+	}
+
+	nsParts := strings.Split(namespace, ".")
+	suffix := nsParts[len(nsParts)-1]
+
+	switch suffix {
+	case "yml", "yaml":
+		return c.caches.dumpNamespaceYAML(namespace, filepath)
+	default:
+		return fmt.Errorf("namespace %s format not support download yet", namespace)
+	}
 }
 
 // WatchUpdate get all updates
