@@ -9,7 +9,7 @@ import (
 )
 
 type namespaceCache struct {
-	lock   sync.RWMutex
+	lock   sync.Mutex
 	caches map[string]*cache
 }
 
@@ -20,15 +20,12 @@ func newNamespaceCahce() *namespaceCache {
 }
 
 func (n *namespaceCache) mustGetCache(namespace string) *cache {
-	n.lock.RLock()
-	if ret, ok := n.caches[namespace]; ok {
-		n.lock.RUnlock()
-		return ret
-	}
-	n.lock.RUnlock()
-
 	n.lock.Lock()
 	defer n.lock.Unlock()
+
+	if ret, ok := n.caches[namespace]; ok {
+		return ret
+	}
 
 	cache := newCache()
 	n.caches[namespace] = cache
@@ -36,6 +33,9 @@ func (n *namespaceCache) mustGetCache(namespace string) *cache {
 }
 
 func (n *namespaceCache) drain() {
+	n.lock.Lock()
+	defer n.lock.Unlock()
+
 	for namespace := range n.caches {
 		delete(n.caches, namespace)
 	}
@@ -78,6 +78,8 @@ func (n *namespaceCache) dumpNamespaceYAML(namespace, dumpPath string) error {
 }
 
 func (n *namespaceCache) dump(name string) error {
+	n.lock.Lock()
+	defer n.lock.Unlock()
 
 	var dumps = map[string]map[string]string{}
 
