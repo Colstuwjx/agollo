@@ -24,8 +24,10 @@
 
 ## Installation
 
+Since we hacked something in upstream repo, just install the agollo via the following command:
+
 ```sh
-    go get -u github.com/philchia/agollo
+    go get -u github.com/Colstuwjx/agollo
 ```
 
 ## Usage

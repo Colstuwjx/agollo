@@ -20,8 +20,10 @@
 
 ## 安装
 
+由于对上游仓库做了少许改动，请使用下列命令来安装此依赖：
+
 ```sh
-    go get -u github.com/philchia/agollo
+    go get -u github.com/Colstuwjx/agollo
 ```
 
 ## 使用
