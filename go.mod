@@ -1,3 +1,3 @@
-module github.com/Colstuwjx/agollo
+module github.com/Colstuwjx/agollo/v2
 
-go 1.12
+go 1.13
